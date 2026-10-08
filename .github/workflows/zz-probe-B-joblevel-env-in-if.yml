@@ -1,0 +1,22 @@
+# DISPOSABLE FALSIFIER B — CI_TRUTH_RESTORATION_001.
+# The repair pattern in isolation: a JOB-LEVEL `env:` reads `secrets.*`, and the
+# step `if:` reads `env.*`. EXPECTED OUTCOME: validator accepts, ONE job is
+# created, the gated step is correctly SKIPPED because the secret is absent, and
+# the ungated step runs. This is the positive control for probe A.
+name: zz-probe-B-joblevel-env-in-if
+on:
+  push:
+    branches: ["ci-truth/validator-probe-evidence"]
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      HAVE_SECRET: ${{ secrets.NO_SUCH_SECRET != '' }}
+    steps:
+      - name: Gated on the job-level env value (expected to SKIP - secret absent)
+        if: env.HAVE_SECRET == 'true'
+        run: echo "should not run: the secret is absent"
+      - name: Report what the env actually rendered
+        run: echo "HAVE_SECRET rendered as '${HAVE_SECRET}' and this job was created"
