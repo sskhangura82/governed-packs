@@ -1,0 +1,12 @@
+name: zz-c1-literal-env-in-step-if
+on: { push: { branches: ["ci-truth/validator-probe-2"] } }
+permissions: { contents: read }
+jobs:
+  j:
+    runs-on: ubuntu-latest
+    env:
+      LIT: "true"
+    steps:
+      - name: gated on a LITERAL job-level env
+        if: env.LIT == 'true'
+        run: echo "C1 gated step ran"

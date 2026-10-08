@@ -1,0 +1,14 @@
+name: zz-c3-repair-pattern
+on: { push: { branches: ["ci-truth/validator-probe-2"] } }
+permissions: { contents: read }
+jobs:
+  j:
+    runs-on: ubuntu-latest
+    env:
+      FROMSEC: ${{ secrets.NO_SUCH_SECRET != '' }}
+    steps:
+      - name: gated on job-level env derived from a secret
+        if: env.FROMSEC == 'true'
+        run: echo "C3 gated step ran (secret present)"
+      - name: ungated
+        run: echo "C3 ungated step ran; FROMSEC='$FROMSEC'"
